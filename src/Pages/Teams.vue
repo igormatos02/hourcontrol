@@ -23,7 +23,7 @@
                 <button @click="edit( item)" class="btn edit-button">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button @click="confirmDelete(item.id)" class="btn delete-button">
+                <button @click="exclude(item.id)" class="btn delete-button">
                   <i class="fas fa-trash"></i>
                 </button>
               </td>
@@ -46,7 +46,7 @@
   
   <script>
   import { useToast } from 'vue-toastification';
-  import { list,post } from '../../api.js';
+  import { get,list,post,put,remove } from '../../api.js';
   export default {
     data() {
       return {
@@ -63,29 +63,42 @@
           this.editMode = false;
         
       },
-      edit(item = {}) {
-        this.showGrid = false;
-        this.selectedItem = item;
-        this.editMode = true;
+      edit(item) {
+        get("team",item.id).then(data => { 
+          this.selectedItem = data; this.showGrid = false;  
+          this.editMode = true;
+        })
+       
+       
       },
       saveItem() {
        
-        post("team","",this.selectedItem).then(res => {  })
-        this.showGrid = true;
-        this.showToast('Item saved successfully!', 'success');
+        if(this.editMode) {
+          put("team", this.selectedItem.id ,this.selectedItem).then(res => {
+            this.loadTeams();
+            this.showGrid = true;
+            this.showToast('Item saved successfully!', 'success');
+          })
+        }else {
+          post("team","",this.selectedItem).then(data => {  
+            this.loadTeams();
+            this.showGrid = true;
+            this.showToast('Item saved successfully!', 'success');
+          })
+        }
+      
+        
       },
       cancelForm() {
         this.showGrid = true;
       },
-      confirmDelete(id) {
-        this.showToast('Are you sure you want to delete this item?', 'confirm', () => {
-          this.deleteItem(id);
-        });
+      exclude(id) {
+        remove("team", id ).then(res => {
+            this.loadTeams();
+            this.showToast('Item deleted successfully!', 'success');
+          })
       },
-      deleteItem(id) {
-        this.items = this.items.filter(item => item.id !== id);
-        this.showToast('Item deleted successfully!', 'success');
-      },
+     
       showToast(message, type, callback = null) {
         const toast = useToast();
         if (type === 'confirm') {
