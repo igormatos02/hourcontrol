@@ -42,6 +42,26 @@ export async function get(entity, id) {
     }
 }
 
+
+export async function getReport(teamId, employeeId,year,month) {
+    try {
+      
+        const url = new URL(`${apiUrl}/api/report/${teamId}/${employeeId}/${year}/${month}`);
+        
+
+        const response = await fetch(url.toString());
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return null;
+    }
+}
+
 export async function post(entity, params = {}, body = {}) {
     try {
         const url = new URL(`${apiUrl}/api/${entity}`);

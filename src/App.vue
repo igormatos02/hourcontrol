@@ -4,5 +4,10 @@ import Application from './Application.vue'
 </script>
 
 <template>
-   <Application />
+     <router-view></router-view><!--<Application />-->
 </template>
+<script>
+export default {
+  name: 'App'
+}
+</script>
